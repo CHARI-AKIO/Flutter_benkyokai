@@ -1,7 +1,30 @@
+import 'dart:developer';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:untitled/FirstPage.dart';
+//-----------------------------------------------------------------------------
+
+final counterProvider = StateNotifierProvider<Counter, int>((ref){
+  return Counter();
+});
+
+class Counter extends StateNotifier<int>{
+  Counter() : super(0);
+  void increment() => state++;
+}
+
+class CounterForm extends ConsumerWidget{
+  const CounterForm({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(counterProvider);
+    return Text('$count');
+  }
+}
+//-----------------------------------------------------------------------------
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +56,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 String SendString="";
-
+int counter=0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +67,18 @@ String SendString="";
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextButton(onPressed:(){
+              setState(() {
+                counter++;
+              });
+            }
+                , child: Text('counter => ' + '$counter')),
+            TextField(
+                onSubmitted: (text){
+                    SendString = text;
+            },
+
+            )
           ],
         ),
       ),
@@ -51,9 +86,8 @@ String SendString="";
         onPressed: (){
           Navigator.push(
               context,
-              MaterialPageRoute(builder:(context) => Firstpage(SendString)
+              MaterialPageRoute(builder:(context) => Firstpage(SendString, counter)
           ));
-          
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
